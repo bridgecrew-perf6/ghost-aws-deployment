@@ -1,0 +1,11 @@
+---
+- src: newtonne.cloudwatchagent
+  version: 1.1.1
+- src: https://github.com/SimpliField/ansible-node
+  name: SimpliField.node
+  version: f9bd9ed
+- src: jdauphant.nginx
+  version: v2.7.1
+- src: https://github.com/mtpereira/ansible-ghost
+  name: mtpereira.ghost
+  version: 310f54f

@@ -1,0 +1,52 @@
+---
+- name: Upgrade all apt packages
+  hosts: default
+  become: yes
+  tasks:
+    - name: Update cache
+      apt:
+        update_cache: yes
+        force_apt_get: yes
+        cache_valid_time: 3600
+    - name: Upgrade packages
+      apt:
+        upgrade: "dist"
+        force_apt_get: yes
+
+- name: Install dependencies
+  hosts: default
+  become: yes
+  tasks:
+    - name: Install packages
+      ansible.builtin.package:
+        name:
+          - "mysql-server"
+        state: present
+
+-  name: Install and configure CloudWatch agent
+   hosts: default
+   become: yes
+   vars:
+    # Configuration for CloudWatch Agent
+     cwa_config_map:
+       metrics:
+         metrics_collected:
+           disk:
+             measurement:
+               - name: disk_used_percent
+             resources:
+               - /
+   roles:
+     - newtonne.cloudwatchagent
+
+- name: Cleanup
+  hosts: default
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Autoremove
+      raw: apt-get autoremove -y
+    - name: Remove apt lists
+      raw: rm -rf /var/lib/apt/lists/*
+    - name: Remove ubuntu user authorized keys
+      raw: rm -f /home/ubuntu/.ssh/authorized_keys
