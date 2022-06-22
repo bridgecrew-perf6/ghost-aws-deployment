@@ -39,6 +39,25 @@
    roles:
      - newtonne.cloudwatchagent
 
+- name: Configure MySQL
+  hosts: default
+  become: yes
+  vars:
+    # This should go into an Ansible vault or sops
+    mysql_encrypted_pwd: 'littleMaryHad_a_LAMB'
+  tasks:
+    - name: Create "ghostdata" database
+      community.mysql.mysql_db:
+        name: ghostdata
+        state: present
+    - name: Create user with password, all database privileges and 'WITH GRANT OPTION' in db1 and db2
+      community.mysql.mysql_user:
+        state: present
+        name: bob
+        password: {{ mysql_encrypted_pwd }}
+        priv:
+          'ghostdata.*': 'ALL,GRANT'
+
 - name: Cleanup
   hosts: default
   become: yes
